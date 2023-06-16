@@ -191,20 +191,10 @@
             })
           }).then((response) => {
             response.json().then((responseData) => {
-              users = responseData.comments.map((comment) => {
-                return {
-                  name: comment.author.name,
-                  date: name(new Date(comment.date)),
-                  comments: comment.text,
-                  like: comment.likes,
-                  isLiked: false,
-                  active: ""
-                };
-              });
-              renderUsers()
+              users = responseData.comments;
+              fetchPromise();
             })
           });
-          fetchPromise();
           renderUsers();
 
       // Очищение полей ввода
