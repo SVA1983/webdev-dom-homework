@@ -9,13 +9,21 @@
   <body>
     
     <div class="container"> 
+      <div class="box-load" id="boxLoad">
+        <p class="text-load">Пожалуйста подождите комментарии загружаются ...</p>
+      </div>
         
         
       <ul class="comments" id="list">
 
+       
+
         <!-- Список ренедерится из API -->
 
       </ul>
+      <div class="box-load-new">
+        <p class="text-load-new">Комментарий загружается ...</p>
+      </div>
       <div class="add-form">
         <input
           type="text"
@@ -51,8 +59,17 @@
     const replyComment = document.querySelectorAll(".comment");
     const textName = document.querySelectorAll(".add-form-name");
     const textComment = document.querySelectorAll(".add-form-text");
-    
+    const comBox = document.querySelector(".box-load");
+    const comBoxNew = document.querySelector(".box-load-new");
 
+    
+    
+    const activLoad = () => {
+      return comBox.classList.add("box-load-active");
+      
+    }; activLoad();
+    
+    
     
 // массив с данными существующих пользователей
 
@@ -65,6 +82,10 @@
         fetch("https://wedev-api.sky.pro/api/v1/vlad-smirnov/comments",
         {
             method: "GET",
+        }).then((response) => { 
+          
+         
+          return response
         })
         .then((response) => {
         return response.json()
@@ -81,9 +102,16 @@
             };
           });
           renderUsers();
-        })
+        }).then(() => { 
+          comBox.classList.remove("box-load-active");
+        
+        });
+        
     }; 
     fetchPromise();
+    
+        
+     
     
     // Добавление лайков
 
@@ -177,7 +205,8 @@
         commentInput.classList.add("error"); return
       }; 
       buttonElement.disabled = true;
-      buttonElement.textContent = "Добавляем";
+      comBoxNew.classList.add("box-load-new-active");
+      
       
       fetch("https://wedev-api.sky.pro/api/v1/vlad-smirnov/comments",
       {
@@ -193,10 +222,6 @@
             })
         })
         .then((response) => {
-            buttonElement.textContent = "Загружаем";
-            return response;
-        })
-        .then((response) => {
             return response.json()
         })
         .then((responseData) => {
@@ -206,23 +231,20 @@
         .then(() => {
             return fetchPromise();
         })
-        .then((r) => {
+        .then(() => {
+          comBoxNew.classList.remove("box-load-new-active");
           buttonElement.disabled = false;
-          buttonElement.textContent = "Написать";
-          })
-        
-        
-        
+        });
+
         renderUsers();
 
-     
+      // Очищение полей ввода
 
-      
       nameInput.value = "";
       commentInput.value = "";
     }); 
     
-      
+   
     "use strict";  
     console.log("It works!");
   </script>
