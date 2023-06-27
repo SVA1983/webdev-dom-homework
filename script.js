@@ -163,20 +163,23 @@ const buttonElement = document.getElementById("addButton");
       
       // POST запрос
       
-      fetch("https://wedev-api.sky.pro/api/v1/vlad-smirnov/comments",
-      {
-        method: "POST",
-        body: JSON.stringify(
+      const fetchPost = () => {
+        return fetch("https://wedev-api.sky.pro/api/v1/vlad-smirnov/comments",
+        {
+          method: "POST",
+          body: JSON.stringify(
             {
-                date: name(new Date()),
-                likes: 0,
-                isLiked: false,
-                text: commentInput.value,
-                name: nameInput.value,
-                active: "",
-                
+              date: name(new Date()),
+              likes: 0,
+              isLiked: false,
+              text: commentInput.value,
+              name: nameInput.value,
+              active: "",
+              forceError: true,  
             })
-        })
+          })
+        }
+        fetchPost()
         .then((response) => {
           
           comBoxNew.classList.remove("box-load-new-active");
@@ -184,23 +187,14 @@ const buttonElement = document.getElementById("addButton");
             return response.json();
           }
           else if (response.status === 400 && nameInput.value.length < 3) {
-            nameInput.classList.add("error");
-            setTimeout(() => {
-              return nameInput.classList.remove("error") 
-            }, 3000); 
-            alert("Имя и комментарий не должны быть короче 3х символов"); console.log(response);
-            return response.json();
+            throw new Error(400);
           }
           else if (response.status === 400 && commentInput.value.length < 3) {
-            commentInput.classList.add("error");
-            setTimeout(() => {
-              return commentInput.classList.remove("error") 
-            }, 3000);
-            alert("Имя и комментарий не должны быть короче 3х символов");
-            return response.json();
+            throw new Error(401);
           }
-
-          
+          else if (response.status === 500) {
+            throw new Error(500);
+          }
           else {
             throw new Error()
           }
@@ -219,19 +213,34 @@ const buttonElement = document.getElementById("addButton");
           nameInput.value = "";
         commentInput.value = "";
         })
-        .catch((error) => {
-          alert("Что то пошло не так, повторите позже") ;
-          
-         
+        .catch((error) => { 
+          if(error.message == 400) {
+            nameInput.classList.add("error");
+            setTimeout(() => {
+              return nameInput.classList.remove("error") 
+            }, 3000); 
+            alert("Имя и комментарий не должны быть короче 3х символов"); 
+          }
+          else if (error.message == 401) {
+            commentInput.classList.add("error");
+            setTimeout(() => {
+              return commentInput.classList.remove("error") 
+            }, 3000);
+            alert("Имя и комментарий не должны быть короче 3х символов");
+          }
+          else if (error.message == 500) {
+            alert("Проблемы с сервером, повторите позже")
+            buttonElement.disabled = false;
+            // return fetchPost()
+          }
+          else {
+            comBoxNew.classList.remove("box-load-new-active");
+            alert("Что то пошло не так, повторите позже")
+          };
+          addForm.classList = "add-form";
           buttonElement.disabled = false;
-
-        });
-       
+        }); 
         renderUsers();
-
-     
-
-      
     }); 
     
    
