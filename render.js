@@ -1,38 +1,25 @@
-// const renderUsers = () => {
-//       const usersHtml = users.map((user, index) => {
-//         return `<li class="comment" data-index="${index}">
-//           <div class="comment-header">
-//             <div> ${user.name}</div>
-//             <div>${user.date}</div>
-//           </div>
-//           <div class="comment-body">
-//             <div class="comment-text">
-//               ${user.comments}
-//             </div>
-//           </div>
-//           <div class="comment-footer">
-//             <div class="likes">
-//               <span class="likes-counter">${user.like}</span>
-//               <button class="like-button ${user.active}" data-index = ${index}></button>
-//             </div>
-//         </li>`
-//        }).join(''); 
-//        listElement.innerHTML = usersHtml; 
-//        likeFunctions();   
-       
+import { listElement } from "./script.js";
+import { likeFunctions } from "./script.js";
+import { users } from "./script.js";
 
-//       // Функция ответа на комментарий 
 
-//       const userElements = document.querySelectorAll(".comment");
-//       const answerComment = () => {
-//       for (const userElement of userElements) {
-//         const index = userElement.dataset.index;
-//         userElement.addEventListener("click", () => {
-//           commentInput.value = `> ${users[index].comments}
-//           ${users[index].name}, `;    
-//           renderUsers();   
-//         })
-//       }; 
-
-//     }; answerComment();   
-//     }; renderUsers(); 
+export const renderUsers = (element, getListUsers) => {
+    const usersHtml = users.map((user, index) => getListUsers(user, index)).join(''); 
+    element.innerHTML = usersHtml; 
+    likeFunctions();   
+         
+  
+    // Функция ответа на комментарий 
+  
+    const userElements = document.querySelectorAll(".comment");
+    const answerComment = () => {
+        for (const userElement of userElements) {
+            const index = userElement.dataset.index;
+            userElement.addEventListener("click", () => {
+                commentInput.value = `> ${users[index].comments}
+                ${users[index].name}, `;
+                renderUsers(listElement, getListUsersEdit); 
+            })
+        }; 
+    }; answerComment();   
+}; 
